@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Parties</string>
+    <string name="signout_menu">Sign Out</string>
+    <string name="bookmark_button">Bookmark</string>
+    <string name="search_button">Make a book</string>
+    <string name="share_button">Share now</string>
+</resources>
