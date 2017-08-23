@@ -2,11 +2,13 @@ package com.now.parties;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +29,11 @@ public class ArticleSingleActivity extends AppCompatActivity {
     private Button mShareButton;
 
     private DatabaseReference mDatabaseReference;
-    private String mArticle_id;
+    private FirebaseDatabase mFirebaseDatabase;
+
+    private String mArticleKey;
+
+    private View.OnClickListener mOnClickListener;
 
 
     @Override
@@ -45,9 +51,12 @@ public class ArticleSingleActivity extends AppCompatActivity {
         mSearchButton = (Button) findViewById(R.id.searchButton);
         mShareButton = (Button) findViewById(R.id.shareButton);
 
-        mArticle_id = getIntent().getExtras().getString("article_id");
+        mArticleKey = getIntent().getExtras().getString("article_key");
 
-        mDatabaseReference.child(mArticle_id).addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference();
+
+        mDatabaseReference.child(mArticleKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -57,7 +66,6 @@ public class ArticleSingleActivity extends AppCompatActivity {
 
                 mArticleMainTitle.setText(article_main_title);
                 mArticleSubTitle.setText(article_sub_title);
-
                 Picasso.with(ArticleSingleActivity.this).load(article_main_image).into(mArticleMainImage);
 
             }
@@ -67,5 +75,17 @@ public class ArticleSingleActivity extends AppCompatActivity {
 
             }
         });
+
+        mOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        };
+
+        mBookmarkButton.setOnClickListener(mOnClickListener);
+        mSearchButton.setOnClickListener(mOnClickListener);
+        mShareButton.setOnClickListener(mOnClickListener);
+
     }
 }

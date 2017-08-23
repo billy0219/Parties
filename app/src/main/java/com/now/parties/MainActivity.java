@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 Intent singleArticleIntent = new Intent(MainActivity.this, ArticleSingleActivity.class );
-                                singleArticleIntent.putExtra("article_id", article_key);
+                                singleArticleIntent.putExtra("article_key", article_key);
                                 startActivity(singleArticleIntent);
                             }
                         });
