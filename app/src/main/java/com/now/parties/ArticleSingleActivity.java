@@ -28,10 +28,9 @@ public class ArticleSingleActivity extends AppCompatActivity {
     private Button mSearchButton;
     private Button mShareButton;
 
-    private DatabaseReference mDatabaseReference;
-    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseArticleReference;
 
-    private String mArticleKey;
+    private String mArticle_key = null;
 
     private View.OnClickListener mOnClickListener;
 
@@ -51,12 +50,11 @@ public class ArticleSingleActivity extends AppCompatActivity {
         mSearchButton = (Button) findViewById(R.id.searchButton);
         mShareButton = (Button) findViewById(R.id.shareButton);
 
-        mArticleKey = getIntent().getExtras().getString("article_key");
+        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference();
+        mArticle_key = getIntent().getExtras().getString("article_key");
 
-        mDatabaseReference.child(mArticleKey).addValueEventListener(new ValueEventListener() {
+        mDatabaseArticleReference.child(mArticle_key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 

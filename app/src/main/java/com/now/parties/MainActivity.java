@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+    private DatabaseReference mDatabaseArticleReference;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +53,7 @@ public class MainActivity extends AppCompatActivity {
         mGridLayoutManager = new GridLayoutManager(this, 1);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getInstance().getReference();
+        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
 
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                         ViewItem.class,
                         R.layout.list_row,
                         ArticlesViewHolder.class,
-                        mDatabaseReference.child("articles")
+                        mDatabaseArticleReference
                 ){
                     @Override
                     protected void populateViewHolder(ArticlesViewHolder viewHolder, ViewItem model, int position) {
