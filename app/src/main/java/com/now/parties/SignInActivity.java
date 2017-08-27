@@ -109,6 +109,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         Intent signInIntent = new Intent(SignInActivity.this, MainActivity.class);
                         signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(signInIntent);
+                        overridePendingTransition(R.anim.fade, R.anim.hold);
                     } else {
                         mSignInProgressDialog.dismiss();
                         Toast.makeText(SignInActivity.this,

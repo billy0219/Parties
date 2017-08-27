@@ -102,6 +102,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         Intent signUpIntent = new Intent(SignUpActivity.this, MainActivity.class);
                                         signUpIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(signUpIntent);
+                                        overridePendingTransition(R.anim.fade, R.anim.hold);
                                     }
                                 }
                             });
@@ -159,6 +160,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Intent signInIntent = new Intent(SignUpActivity.this, MainActivity.class);
                             signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(signInIntent);
+                            overridePendingTransition(R.anim.fade, R.anim.hold);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());

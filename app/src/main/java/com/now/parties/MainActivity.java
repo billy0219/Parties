@@ -1,43 +1,44 @@
 package com.now.parties;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.View;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.squareup.picasso.Picasso;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String ANONYMOUS = "anonymous";
 
-    private RecyclerView mRecyclerMainView;
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private FloatingActionButton mFloatingActionButton;
+    private NavigationView mNavigationView;
+//    private FrameLayout mFrameLayout;
+
+    private Fragment mRecyclerFragment;
 
     private String mUsername;
-
-    private GridLayoutManager mGridLayoutManager;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -51,20 +52,28 @@ public class MainActivity extends AppCompatActivity {
 
         mUsername = ANONYMOUS;
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerMainLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.string.open, R.string.close);
-
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        mRecyclerMainView = (RecyclerView) findViewById(R.id.recyclerMainView);
-        mGridLayoutManager = new GridLayoutManager(this, 1);
+        mNavigationView = (NavigationView) findViewById(R.id.navView);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+
+        mRecyclerFragment = (Fragment) getSupportFragmentManager().findFragmentById(R.id.fragment_default);
+
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
-
-        mRecyclerMainView.setLayoutManager(mGridLayoutManager);
-        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
@@ -89,77 +98,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-
-        FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder> firebaseRecyclerAdapter =
-                new FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder>(
-                        ViewItem.class,
-                        R.layout.recycler_list_components,
-                        ArticlesViewHolder.class,
-                        mDatabaseArticleReference
-                ){
-                    @Override
-                    protected void populateViewHolder(ArticlesViewHolder viewHolder, ViewItem model, int position) {
-                        final String article_key = getRef(position).getKey();
-
-                        viewHolder.setPlaceName(model.getPlaceName());
-                        viewHolder.setPlaceDesc(model.getPlaceDesc());
-                        viewHolder.setPlaceImage(getApplicationContext(), model.getPlaceImage());
-
-                        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-
-                            @Override
-                            public void onClick(View v) {
-                                Intent singleArticleIntent = new Intent(MainActivity.this, ArticleContentsActivity.class );
-                                singleArticleIntent.putExtra("article_key", article_key);
-                                startActivity(singleArticleIntent);
-                            }
-                        });
-                    }
-                };
-        mRecyclerMainView.setAdapter(firebaseRecyclerAdapter);
-    }
-
-    public static class ArticlesViewHolder extends RecyclerView.ViewHolder {
-
-        View mView;
-
-        public ArticlesViewHolder(View itemView) {
-            super(itemView);
-            mView = itemView;
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerMainLayout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
-        public void setPlaceName(String placeName) {
-            TextView article_place_name = (TextView) mView.findViewById(R.id.placeTitleTextView);
-            article_place_name.setText(placeName);
-        }
-        public void setPlaceDesc(String placeDesc) {
-            TextView article_place_desc = (TextView) mView.findViewById(R.id.placeDescTextView);
-            article_place_desc.setText(placeDesc);
-        }
-        public void setPlaceImage(Context context, String placeImage) {
-            ImageView article_place_image = (ImageView) mView.findViewById(R.id.placeImageView);
-            Picasso.with(context).load(placeImage).into(article_place_image);
-        }
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if(mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    //AuthUI.getInstance().signOut(this);
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_placeMenu) {
+            RecyclerListFragment recyclerListFragment = new RecyclerListFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment_default, recyclerListFragment).commit();
+        } else if (id == R.id.nav_favoriteMenu) {
+
+        } else if (id == R.id.nav_worldMap) {
+
+        } else if (id == R.id.nav_signOut) {
+            AuthUI.getInstance().signOut(this);
+            Intent sign_out_intent = new Intent(MainActivity.this, MemberStatusActivity.class);
+            startActivity(sign_out_intent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerMainLayout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
     @Override
     protected void onPause() {

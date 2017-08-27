@@ -25,6 +25,7 @@ public class MemberStatusActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent sign_in_intent = new Intent(MemberStatusActivity.this, SignInActivity.class);
                 startActivity(sign_in_intent);
+                overridePendingTransition(R.anim.fade, R.anim.hold);
             }
         });
 
@@ -33,6 +34,7 @@ public class MemberStatusActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent sign_up_intent = new Intent(MemberStatusActivity.this, SignUpActivity.class);
                 startActivity(sign_up_intent);
+                overridePendingTransition(R.anim.fade, R.anim.hold);
             }
         });
 

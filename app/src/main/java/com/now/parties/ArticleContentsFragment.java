@@ -1,12 +1,10 @@
 package com.now.parties;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -16,14 +14,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ArticleContentsActivity extends AppCompatActivity {
+public class ArticleContentsFragment extends Fragment {
 
     private WebView mArticleContentView;
-    private Toolbar mToolbar;
-
-
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
 
     private DatabaseReference mDatabaseArticleReference;
 
@@ -32,30 +25,19 @@ public class ArticleContentsActivity extends AppCompatActivity {
     private String mArticleUrl;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article_contents);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.article_fragment, container, false);
+    }
 
-        mArticleContentView = (WebView) findViewById(R.id.articleWebView);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
-        setSupportActionBar(mToolbar);
 
-        mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
-        setSupportActionBar(mToolbar);
+    @Override
+    public void onActivityCreated(Bundle savedInstance) {
+        super.onActivityCreated(savedInstance);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.string.open, R.string.close);
-
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
-
+        mArticleContentView = (WebView) getView().findViewById(R.id.articleWebView);
         mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
-        mArticleKey = getIntent().getExtras().getString("article_key");
+        mArticleKey = getArguments().getString("article_key");
         mArticleName = null;
         mArticleUrl = null;
 
@@ -78,7 +60,6 @@ public class ArticleContentsActivity extends AppCompatActivity {
 
             }
         });
-//dddd
 
     }
 
