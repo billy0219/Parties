@@ -1,23 +1,24 @@
 package com.now.parties;
 
-
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,14 +26,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
-import java.util.Arrays;
-
 public class MainActivity extends AppCompatActivity {
 
-    public static final int RC_SIGN_IN = 1;
     public static final String ANONYMOUS = "anonymous";
 
-    private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerMainView;
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private String mUsername;
 
@@ -43,38 +44,45 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabaseArticleReference;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mUsername = ANONYMOUS;
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.string.open, R.string.close);
+
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        mRecyclerMainView = (RecyclerView) findViewById(R.id.recyclerMainView);
         mGridLayoutManager = new GridLayoutManager(this, 1);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
 
-        mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerMainView.setLayoutManager(mGridLayoutManager);
+        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+        setSupportActionBar(mToolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(MainActivity.this, "You're signed in.", Toast.LENGTH_SHORT).show();
+
                 } else {
-                    onSignedOutCleanup();
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
-                                    .setAvailableProviders(
-                                            Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                                    .build(),
-                            RC_SIGN_IN);
+                    Intent signInIntent = new Intent(MainActivity.this, MemberStatusActivity.class);
+                    signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(signInIntent);
                 }
             }
         };
@@ -84,17 +92,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+
         FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder> firebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder>(
                         ViewItem.class,
-                        R.layout.list_row,
+                        R.layout.recycler_list_components,
                         ArticlesViewHolder.class,
                         mDatabaseArticleReference
                 ){
                     @Override
                     protected void populateViewHolder(ArticlesViewHolder viewHolder, ViewItem model, int position) {
-
-                        final String article_key = getRef(position).toString();
+                        final String article_key = getRef(position).getKey();
 
                         viewHolder.setPlaceName(model.getPlaceName());
                         viewHolder.setPlaceDesc(model.getPlaceDesc());
@@ -104,14 +113,14 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onClick(View v) {
-                                Intent singleArticleIntent = new Intent(MainActivity.this, ArticleSingleActivity.class );
+                                Intent singleArticleIntent = new Intent(MainActivity.this, ArticleContentsActivity.class );
                                 singleArticleIntent.putExtra("article_key", article_key);
                                 startActivity(singleArticleIntent);
                             }
                         });
                     }
                 };
-        mRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        mRecyclerMainView.setAdapter(firebaseRecyclerAdapter);
     }
 
     public static class ArticlesViewHolder extends RecyclerView.ViewHolder {
@@ -139,21 +148,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-       MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.signOutMenu:
-                AuthUI.getInstance().signOut(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
+
+    //AuthUI.getInstance().signOut(this);
 
     @Override
     protected void onPause() {
@@ -165,9 +171,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-    }
-
-    private void onSignedOutCleanup() {
-        mUsername = ANONYMOUS;
     }
 }
