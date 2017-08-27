@@ -78,7 +78,7 @@ public class ArticleContentsActivity extends AppCompatActivity {
 
             }
         });
-
+//dddd
 
     }
 
