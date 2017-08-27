@@ -8,25 +8,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <include
+        layout="@layout/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
         android:orientation="vertical"
         android:weightSum="1">
 
-        <fragment
-            android:id="@+id/fragment_default"
-            android:name="com.now.parties.RecyclerListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="507dp"
-            android:layout_weight="0.12"/>
-    </LinearLayout>
-
-    <include
-        layout="@layout/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    </FrameLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navView"
