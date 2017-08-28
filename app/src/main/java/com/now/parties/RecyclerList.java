@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -23,17 +24,15 @@ import com.squareup.picasso.Picasso;
 public class RecyclerList extends Fragment {
 
     private RecyclerView mRecyclerMainView;
-    private GridLayoutManager mGridLayoutManager;
+    private LinearLayoutManager mLinearLayoutManager;
     private FirebaseAuth mFirebaseAuth;
 
     private FirebaseRecyclerAdapter mFirebaseRecyclerAdapter;
-    private FirebaseRecyclerAdapter mFirebaseSecondRecyclerAdapter;
-    private RecyclerView.Adapter mEmptyAdapter;
 
     private DatabaseReference mDatabaseArticleReference;
 
-    public RecyclerList() {
-    }
+//    public RecyclerList() {
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,10 +52,9 @@ public class RecyclerList extends Fragment {
 
         mRecyclerMainView = (RecyclerView) view.findViewById(R.id.recyclerMainView);
 
-        mRecyclerMainView.setLayoutManager(mGridLayoutManager);
-        mGridLayoutManager = new GridLayoutManager(getActivity(), 1);
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerMainView.setLayoutManager(mLinearLayoutManager);
 
-        mRecyclerMainView.setAdapter(mFirebaseRecyclerAdapter);
         mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder>(
                 ViewItem.class,
                 R.layout.recycler_list_components,
@@ -88,9 +86,28 @@ public class RecyclerList extends Fragment {
                 });
             }
         };
+        mFirebaseRecyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int friendlyMessageCount = mFirebaseRecyclerAdapter.getItemCount();
+                int lastVisiblePosition =
+                        mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                // If the recycler view is initially being loaded or the
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (friendlyMessageCount - 1) &&
+                                lastVisiblePosition == (positionStart - 1))) {
+                    mLinearLayoutManager.scrollToPosition(positionStart);
+                }
+            }
+        });
+        mRecyclerMainView.setAdapter(mFirebaseRecyclerAdapter);
+        mRecyclerMainView.setHasFixedSize(true);
         mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recycler_list, container, false);
+        return view;
     }
 
 //    // TODO: Rename method, update argument and hook method into UI event
@@ -132,7 +149,7 @@ public class RecyclerList extends Fragment {
 //        void onFragmentInteraction(Uri uri);
 //    }
 
-    private static class ArticlesViewHolder extends RecyclerView.ViewHolder {
+    public static class ArticlesViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
         public ArticlesViewHolder(View itemView) {
