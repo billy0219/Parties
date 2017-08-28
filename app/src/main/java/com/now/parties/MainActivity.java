@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mFloatingActionButton;
     private NavigationView mNavigationView;
-//    private FrameLayout mFrameLayout;
+    private FrameLayout mFrameLayout;
 
     private String mUsername;
 
@@ -75,14 +76,17 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        RecyclerList recyclerList = new RecyclerList();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.fragment_container, recyclerList);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        mFrameLayout = (FrameLayout) findViewById(R.id.RecyclerFrameLayout);
+        if (savedInstanceState == null ) {
+            RecyclerList recyclerList = new RecyclerList();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment_container, recyclerList);
+            fragmentTransaction.commit();
+        }
 
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -156,8 +160,5 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-    }
-
-    private class DefaultFragment {
     }
 }
