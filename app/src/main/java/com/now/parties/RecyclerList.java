@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,8 @@ public class RecyclerList extends Fragment {
     private FirebaseAuth mFirebaseAuth;
 
     private FirebaseRecyclerAdapter mFirebaseRecyclerAdapter;
+    private FirebaseRecyclerAdapter mFirebaseSecondRecyclerAdapter;
+    private RecyclerView.Adapter mEmptyAdapter;
 
     private DatabaseReference mDatabaseArticleReference;
 
@@ -35,10 +38,12 @@ public class RecyclerList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mArticleKey = getArguments().getString(ARG_ARTICLE_KEY);
+
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
+//        if (getArguments() != null) {
+//            mArticleKey = getArguments().getString(ARG_ARTICLE_KEY);
+
     }
 
     @Override
@@ -47,29 +52,31 @@ public class RecyclerList extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
         mRecyclerMainView = (RecyclerView) view.findViewById(R.id.recyclerMainView);
-        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
+
         mRecyclerMainView.setLayoutManager(mGridLayoutManager);
         mGridLayoutManager = new GridLayoutManager(getActivity(), 1);
+
+        mRecyclerMainView.setAdapter(mFirebaseRecyclerAdapter);
         mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder>(
-                        ViewItem.class,
-                        R.layout.recycler_list_components,
-                        ArticlesViewHolder.class,
-                        mDatabaseArticleReference ){
+                ViewItem.class,
+                R.layout.recycler_list_components,
+                ArticlesViewHolder.class,
+                mDatabaseArticleReference ){
+            @Override
+            protected void populateViewHolder(ArticlesViewHolder viewHolder, ViewItem model, int position) {
+                final String article_key = getRef(position).getKey();
+
+                viewHolder.setPlaceName(model.getPlaceName());
+                viewHolder.setPlaceDesc(model.getPlaceDesc());
+                viewHolder.setPlaceImage(getActivity().getApplicationContext(), model.getPlaceImage());
+
+                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    protected void populateViewHolder(ArticlesViewHolder viewHolder, ViewItem model, int position) {
-                        final String article_key = getRef(position).getKey();
-
-                        viewHolder.setPlaceName(model.getPlaceName());
-                        viewHolder.setPlaceDesc(model.getPlaceDesc());
-                        viewHolder.setPlaceImage(getActivity().getApplicationContext(), model.getPlaceImage());
-
-                        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
+                    public void onClick(View view) {
 //                                ARG_ARTICLE_KEY = article_key;
 //                                newInstance(ARG_ARTICLE_KEY);
-                                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
 //                                ArticleContents articleContents = new ArticleContents();
 //                                Bundle bundle = new Bundle(1);
 //                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -77,11 +84,11 @@ public class RecyclerList extends Fragment {
 //                                bundle.putString("article_key", article_key);
 //                                articleContents.setArguments(bundle);
 //                                getActivity().overridePendingTransition(R.anim.fade, R.anim.hold);
-                            }
-                        });
                     }
-                };
-        mRecyclerMainView.setAdapter(mFirebaseRecyclerAdapter);
+                });
+            }
+        };
+        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recycler_list, container, false);
     }
@@ -145,5 +152,4 @@ public class RecyclerList extends Fragment {
             Picasso.with(context).load(placeImage).into(article_place_image);
         }
     }
-
 }
