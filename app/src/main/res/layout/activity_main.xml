@@ -8,13 +8,6 @@
     android:layout_height="match_parent"
     >
 
-    <include
-        layout="@layout/main_toolbar"
-        layout_weight="0.04"
-        layout_width="match_parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,10 +16,14 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="530dp"
-            android:layout_gravity="bottom"
-            android:weightSum="1">
+            android:layout_gravity="bottom">
 
         </FrameLayout>
+
+        <include
+            layout="@layout/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>x
 
     </FrameLayout>
 

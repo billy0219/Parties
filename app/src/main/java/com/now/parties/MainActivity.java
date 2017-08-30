@@ -116,8 +116,8 @@ public class MainActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fragment_container, recyclerList)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .addToBackStack(null)
                     .commit();
+
         }
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -134,18 +134,15 @@ public class MainActivity extends AppCompatActivity
             }
         };
     }
-
     @Override
     public void onBackPressed() {
-        int count = getFragmentManager().getBackStackEntryCount();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerMainLayout);
-
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if ( count > 0 ) {
-            getFragmentManager().popBackStack();
-        } else if (!aviasalesFragment.onBackPressed() ) {
-            super.onBackPressed();
+        if (!aviasalesFragment.onBackPressed()) {
+            int count = getSupportFragmentManager().getBackStackEntryCount();
+            if ( count == 0) {
+                super.onBackPressed();
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
         }
     }
 

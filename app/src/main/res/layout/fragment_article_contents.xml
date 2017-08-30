@@ -6,16 +6,14 @@
     android:id="@+id/articleContentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="1">
+    android:orientation="vertical">
 
 
     <WebView
         android:id="@+id/articleWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="0dp"
-        android:layout_weight="1.15">
+        android:layout_margin="0dp">
 
     </WebView>
 
