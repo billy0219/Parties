@@ -3,8 +3,11 @@
       xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/nav_filghtSearch"
+        android:title="Search Flight"/>
+    <item
         android:id="@+id/nav_placeMenu"
-        android:title="Places"/>
+        android:title="Places to Go"/>
     <item
         android:id="@+id/nav_favoriteMenu"
         android:enabled="true"

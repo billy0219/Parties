@@ -154,7 +154,6 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
                             Users users = new Users(mFirebaseAuth.getCurrentUser().getEmail());
                             mDatabaseUserReference.child(CHILD_USER).push().setValue(users);
                             Intent signInIntent = new Intent(SignUpActivity.this, MainActivity.class);

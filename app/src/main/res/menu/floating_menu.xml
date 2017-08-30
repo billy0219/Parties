@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/FabFavoriteButton"
+        android:icon="@drawable/ic_favorite_border_black_24dp"
+        android:title="@string/favorite_button"/>
+    <item
+        android:id="@+id/FabBookingButton"
+        android:icon="@drawable/ic_local_airport_black_24dp"
+        android:title="Booking"/>
+    <item
+        android:id="@+id/FabShareButton"
+        android:icon="@drawable/ic_share_black_24dp"
+        android:title="Share"/>
+</menu>

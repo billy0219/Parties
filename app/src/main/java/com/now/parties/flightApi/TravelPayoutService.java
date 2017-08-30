@@ -10,15 +10,14 @@ import retrofit2.http.Query;
  */
 
 public class TravelPayoutService extends BaseService {
-    public static FlightAPI api()
-    {
+    public static FlightAPI api() {
         return (FlightAPI) retrofit(FlightAPI.class);
     }
 
     public interface FlightAPI
     {
         @Headers({
-                "X-Access-Token: f25ae4959c6152d52f9e516b6aafc7e0"
+                "X-Access-Token: d9c602e791a0b39bea0a979ef51ed608"
         })
         @GET("v2/prices/latest?")
         Call<PricesResource> prices(@Query("currency") String currency,

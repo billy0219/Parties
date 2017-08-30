@@ -2,13 +2,12 @@ package com.now.parties;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,18 +30,7 @@ public class RecyclerList extends Fragment {
 
     private DatabaseReference mDatabaseArticleReference;
 
-//    public RecyclerList() {
-//    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
-//        if (getArguments() != null) {
-//            mArticleKey = getArguments().getString(ARG_ARTICLE_KEY);
-
+    public RecyclerList() {
     }
 
     @Override
@@ -51,6 +39,21 @@ public class RecyclerList extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
         mRecyclerMainView = (RecyclerView) view.findViewById(R.id.recyclerMainView);
+        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
+
+
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        mainActivity.hideFloatingActionButton();
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
 
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerMainView.setLayoutManager(mLinearLayoutManager);
@@ -71,17 +74,15 @@ public class RecyclerList extends Fragment {
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                                ARG_ARTICLE_KEY = article_key;
-//                                newInstance(ARG_ARTICLE_KEY);
-                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-//                                ArticleContents articleContents = new ArticleContents();
-//                                Bundle bundle = new Bundle(1);
-//                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                                fragmentManager.beginTransaction().add(R.id.fragment_default, articleContents).commit();
-//                                bundle.putString("article_key", article_key);
-//                                articleContents.setArguments(bundle);
-//                                getActivity().overridePendingTransition(R.anim.fade, R.anim.hold);
+                                ArticleContents articleContents = new ArticleContents();
+                                Bundle bundle = new Bundle(1);
+                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                fragmentManager.beginTransaction().addToBackStack(null)
+                                        .add(R.id.fragment_container, articleContents)
+                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                        .commit();
+                                bundle.putString("article_key", article_key);
+                                articleContents.setArguments(bundle);
                     }
                 });
             }
@@ -90,64 +91,18 @@ public class RecyclerList extends Fragment {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                int friendlyMessageCount = mFirebaseRecyclerAdapter.getItemCount();
+                int articleListCount = mFirebaseRecyclerAdapter.getItemCount();
                 int lastVisiblePosition =
                         mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                // If the recycler view is initially being loaded or the
-                // user is at the bottom of the list, scroll to the bottom
-                // of the list to show the newly added message.
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (friendlyMessageCount - 1) &&
+                if (lastVisiblePosition == 0 ||
+                        (positionStart >= (articleListCount - 1) &&
                                 lastVisiblePosition == (positionStart - 1))) {
                     mLinearLayoutManager.scrollToPosition(positionStart);
                 }
             }
         });
         mRecyclerMainView.setAdapter(mFirebaseRecyclerAdapter);
-        mRecyclerMainView.setHasFixedSize(true);
-        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
-        // Inflate the layout for this fragment
-        return view;
     }
-
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
 
     public static class ArticlesViewHolder extends RecyclerView.ViewHolder {
         View mView;
@@ -169,4 +124,5 @@ public class RecyclerList extends Fragment {
             Picasso.with(context).load(placeImage).into(article_place_image);
         }
     }
+
 }

@@ -6,20 +6,27 @@
     android:id="@+id/drawerMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    >
 
     <include
-        layout="@layout/app_bar"
+        layout="@layout/main_toolbar"
+        layout_weight="0.04"
+        layout_width="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
     <FrameLayout
-        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:weightSum="1">
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="530dp"
+            android:layout_gravity="bottom"
+            android:weightSum="1">
+
+        </FrameLayout>
 
     </FrameLayout>
 

@@ -159,7 +159,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             mUserDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.hasChild(mFirebaseAuth.getCurrentUser().getUid())) {
+                                    Users users = new Users(mFirebaseAuth.getCurrentUser().getEmail());
+                                    if (dataSnapshot.exists()) {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "signInWithCredential:success");
                                         Intent signInIntent = new Intent(SignInActivity.this, MainActivity.class);
@@ -167,7 +168,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                         startActivity(signInIntent);
                                     } else {
                                         Intent signInIntent = new Intent(SignInActivity.this, MainActivity.class);
-                                        Users users = new Users(mFirebaseAuth.getCurrentUser().getEmail());
                                         mUserDatabaseReference.child(CHILD_USER).push().setValue(users);
                                         signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(signInIntent);
