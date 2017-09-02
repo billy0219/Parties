@@ -16,33 +16,38 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-public class RecyclerList extends Fragment {
 
-    private RecyclerView mRecyclerMainView;
+public class FavoriteRecyclerList extends Fragment {
+    private RecyclerView mRecyclerFavoriteView;
     private LinearLayoutManager mLinearLayoutManager;
     private FirebaseAuth mFirebaseAuth;
 
     private FirebaseRecyclerAdapter mFirebaseRecyclerAdapter;
 
     private DatabaseReference mDatabaseArticleReference;
+    private DatabaseReference mUserFavoriteDatabaseBReference;
 
-    public RecyclerList() {
+    private String mArticleKey;
+
+    public FavoriteRecyclerList() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recycler_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_favorite_recycler_list, container, false);
 
-        mRecyclerMainView = (RecyclerView) view.findViewById(R.id.recyclerMainView);
-        mRecyclerMainView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerFavoriteView = (RecyclerView) view.findViewById(R.id.recyclerFavoriteView);
+        mRecyclerFavoriteView.setItemAnimator(new DefaultItemAnimator());
 //        MainActivity mainActivity = (MainActivity) getActivity();
 //        mainActivity.hideFloatingActionButton();
-
         return view;
     }
 
@@ -51,18 +56,22 @@ public class RecyclerList extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+        final String user_uid  = mFirebaseAuth.getCurrentUser().getUid();
+
         mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articlesList");
+        mUserFavoriteDatabaseBReference = FirebaseDatabase.getInstance().getReference().child("userFavorite").child(user_uid);
 
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerMainView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerFavoriteView.setLayoutManager(mLinearLayoutManager);
 
-        mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ViewItem, ArticlesViewHolder>(
+        mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ViewItem, FavoriteArticlesViewHolder>(
                 ViewItem.class,
                 R.layout.recycler_list_components,
-                ArticlesViewHolder.class,
-                mDatabaseArticleReference ){
+                FavoriteArticlesViewHolder.class,
+                mUserFavoriteDatabaseBReference ){
+
             @Override
-            protected void populateViewHolder(ArticlesViewHolder viewHolder, ViewItem model, int position) {
+            protected void populateViewHolder( FavoriteArticlesViewHolder viewHolder, ViewItem model, int position) {
                 final String article_key = getRef(position).getKey();
 
                 viewHolder.setPlaceName(model.getPlaceName());
@@ -72,15 +81,15 @@ public class RecyclerList extends Fragment {
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                                ArticleContents articleContents = new ArticleContents();
-                                Bundle bundle = new Bundle(1);
-                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                                fragmentManager.beginTransaction().addToBackStack(null)
-                                        .add(R.id.fragment_container, articleContents)
-                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                                        .commit();
-                                bundle.putString("article_key", article_key);
-                                articleContents.setArguments(bundle);
+                        ArticleContents articleContents = new ArticleContents();
+                        Bundle bundle = new Bundle(1);
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        fragmentManager.beginTransaction().addToBackStack(null)
+                                .add(R.id.fragment_container, articleContents)
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                .commit();
+                        bundle.putString("article_key", article_key);
+                        articleContents.setArguments(bundle);
                     }
                 });
             }
@@ -99,13 +108,13 @@ public class RecyclerList extends Fragment {
                 }
             }
         });
-        mRecyclerMainView.setAdapter(mFirebaseRecyclerAdapter);
+        mRecyclerFavoriteView.setAdapter(mFirebaseRecyclerAdapter);
     }
 
-    public static class ArticlesViewHolder extends RecyclerView.ViewHolder {
+    public static class FavoriteArticlesViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
-        public ArticlesViewHolder(View itemView) {
+        public FavoriteArticlesViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
         }
@@ -124,3 +133,4 @@ public class RecyclerList extends Fragment {
     }
 
 }
+

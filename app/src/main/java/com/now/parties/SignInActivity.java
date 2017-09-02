@@ -36,7 +36,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "SignInActivity";
-    private final String CHILD_USER = "Users";
 
     private TextView mExMemberEmail;
     private TextView mExMemberPassword;
@@ -159,7 +158,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             mUserDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Users users = new Users(mFirebaseAuth.getCurrentUser().getEmail());
+                                    String user_id = mFirebaseAuth.getCurrentUser().getUid();
+                                    String user_email = mFirebaseAuth.getCurrentUser().getEmail();
                                     if (dataSnapshot.exists()) {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "signInWithCredential:success");
@@ -168,7 +168,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                         startActivity(signInIntent);
                                     } else {
                                         Intent signInIntent = new Intent(SignInActivity.this, MainActivity.class);
-                                        mUserDatabaseReference.child(CHILD_USER).push().setValue(users);
+                                        mUserDatabaseReference.child("userInformation").child(user_id).child("userEmail").setValue(user_email);
                                         signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(signInIntent);
                                     }

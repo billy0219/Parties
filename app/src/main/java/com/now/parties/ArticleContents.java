@@ -2,6 +2,7 @@ package com.now.parties;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.github.rubensousa.floatingtoolbar.FloatingToolbar;
 import com.google.android.gms.common.SignInButton;
@@ -27,18 +29,18 @@ import ru.aviasales.template.ui.fragment.AviasalesFragment;
 
 public class ArticleContents extends Fragment {
 
-    private final String CHILD_USER_FAVORITE = "User_Favorite";
-
     private WebView mArticleContentView;
     private AviasalesFragment aviasalesFragment;
 
     private FirebaseAuth mFirebaseAuth;
-    private DatabaseReference mDatabaseArticleReference;
-    private DatabaseReference mUserFavoriteArticleDBReference;
+    private DatabaseReference mArticleDatabaseReference;
+    private DatabaseReference mUserFavoriteDatabaseReference;
 
     private String mArticleKey;
     private String mArticleName;
     private String mArticleUrl;
+    private String mArticleImage;
+    private String mArticleDesc;
 
     private FloatingToolbar mFloatingToolbar;
     private FloatingActionButton mFloatingActionButton;
@@ -62,6 +64,21 @@ public class ArticleContents extends Fragment {
         mFloatingToolbar = (FloatingToolbar) getView().findViewById(R.id.floatingToolbar);
         mFloatingActionButton = (FloatingActionButton) getView().findViewById(R.id.fab);
 
+        mArticleContentView = (WebView) getView().findViewById(R.id.articleWebView);
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mArticleDatabaseReference = FirebaseDatabase.getInstance().getReference().child("articlesList");
+        mUserFavoriteDatabaseReference = FirebaseDatabase.getInstance().getReference().child("userFavorite");
+
+        mArticleKey = getArguments().getString("article_key");
+        mArticleName = null;
+        mArticleDesc = null;
+        mArticleImage = null;
+        mArticleUrl = null;
+
+        mArticleContentView.getSettings().setJavaScriptEnabled(true);
+        mArticleContentView.setWebViewClient(new WebViewClient());
+
         mFloatingToolbar.attachFab(mFloatingActionButton);
         mFloatingToolbar.setClickListener(new FloatingToolbar.ItemClickListener() {
             @Override
@@ -84,7 +101,13 @@ public class ArticleContents extends Fragment {
                             .build();
                     shareAction.share();
                 } else if ( id == R.id.FabFavoriteButton ) {
+                    String user_uid = mFirebaseAuth.getCurrentUser().getUid();
+                    mUserFavoriteDatabaseReference.child(user_uid).child(mArticleKey).child("placeName").setValue(mArticleName);
+                    mUserFavoriteDatabaseReference.child(user_uid).child(mArticleKey).child("placeDesc").setValue(mArticleDesc);
+                    mUserFavoriteDatabaseReference.child(user_uid).child(mArticleKey).child("placeImage").setValue(mArticleImage);
+                    mUserFavoriteDatabaseReference.child(user_uid).child(mArticleKey).child("placeArticle").setValue(mArticleUrl);
 
+                    Toast.makeText(getActivity(), "Saved to Favorite List", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -94,24 +117,18 @@ public class ArticleContents extends Fragment {
             }
         });
 
-        mArticleContentView = (WebView) getView().findViewById(R.id.articleWebView);
-        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
-        mArticleKey = getArguments().getString("article_key");
-        mArticleName = null;
-        mArticleUrl = null;
-
-        mArticleContentView.getSettings().setJavaScriptEnabled(true);
-        mArticleContentView.setWebViewClient(new WebViewClient());
-
-        mDatabaseArticleReference.child(mArticleKey).addValueEventListener(new ValueEventListener() {
+        mArticleDatabaseReference.child(mArticleKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String article_main_name = (String) dataSnapshot.child("placeDesc").getValue();
+                String article_desc = (String) dataSnapshot.child("placeDesc").getValue();
+                String article_name = (String) dataSnapshot.child("placeName").getValue();
+                String article_image = (String) dataSnapshot.child("placeImage").getValue();
                 String article_url = (String) dataSnapshot.child("placeArticle").getValue();
 
-                mArticleName = article_main_name;
+                mArticleName = article_name;
+                mArticleDesc = article_desc;
+                mArticleImage = article_image;
                 mArticleUrl = article_url;
-
                 mArticleContentView.loadUrl(mArticleUrl);
             }
             @Override

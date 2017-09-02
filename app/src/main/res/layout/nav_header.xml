@@ -2,29 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@color/colorPrimaryDark"
+              android:layout_height="200dp"
+              android:background="@color/black_000000_opacity_12"
+              android:gravity="bottom"
               android:orientation="vertical"
               android:padding="10dp">
 
+
     <ImageView
-        android:id="@+id/userProfilePhoto"
+        android:id="@+id/userProfileImageView"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/c"/>
+        app:srcCompat="@drawable/billy"/>
 
     <TextView
-        android:id="@+id/userName"
+        android:id="@+id/userNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="25sp"/>
+        android:layout_marginLeft="0dp"
+        android:text="Set your name."
+        android:textSize="22sp"/>
 
     <TextView
-        android:id="@+id/userEmail"
+        android:id="@+id/userEmailTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="20sp"/>
+        android:layout_marginLeft="0dp"
+        android:text="Set your Email."
+        android:textSize="17sp"/>
 </LinearLayout>

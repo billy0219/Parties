@@ -33,11 +33,10 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "SignUpActivity";
-    private final String CHILD_USER = "Users";
 
-    private EditText mNameEditText;
     private EditText mEmailEditText;
     private EditText mPwEditText;
+    private EditText mPwCheckEditText;
 
     private Button mSignUpButton;
     private SignInButton mGoogleSignUpButton;
@@ -55,9 +54,9 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        mNameEditText = (EditText) findViewById(R.id.newMemberNameEditText);
         mEmailEditText = (EditText) findViewById(R.id.newMemberEmailEditText);
         mPwEditText = (EditText) findViewById(R.id.newMemberPwEditText);
+        mPwCheckEditText = (EditText) findViewById(R.id.newMemberPwCheckEditText);
         mSignUpButton = (Button) findViewById(R.id.signupButton);
         mGoogleSignUpButton = (SignInButton) findViewById(R.id.googleSignUpButton);
 
@@ -84,10 +83,11 @@ public class SignUpActivity extends AppCompatActivity {
         mSignUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (TextUtils.isEmpty(mNameEditText.getText())
-                        || TextUtils.isEmpty(mEmailEditText.getText())
+                if (TextUtils.isEmpty(mEmailEditText.getText())
                         || TextUtils.isEmpty(mPwEditText.getText())) {
                     Toast.makeText(SignUpActivity.this, "Please, Enter your Information", Toast.LENGTH_SHORT).show();
+                } else if ( !TextUtils.equals(mPwEditText.getText(), mPwCheckEditText.getText())) {
+                    Toast.makeText(SignUpActivity.this, "Your Password does not match", Toast.LENGTH_SHORT).show();
                 } else {
                     mSignUpProgressDialog.setMessage("Creating New Account..");
                     mSignUpProgressDialog.show();
@@ -96,8 +96,9 @@ public class SignUpActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        Users users = new Users(mEmailEditText.getText().toString());
-                                        mDatabaseUserReference.child(CHILD_USER).push().setValue(users);
+                                        String user_id = mFirebaseAuth.getCurrentUser().getUid();
+                                        String user_email = mFirebaseAuth.getCurrentUser().getEmail();
+                                        mDatabaseUserReference.child("userInformation").child(user_id).child("userEmail").setValue(user_email);
                                         mSignUpProgressDialog.dismiss();
                                         Intent signUpIntent = new Intent(SignUpActivity.this, MainActivity.class);
                                         signUpIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -154,8 +155,9 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            Users users = new Users(mFirebaseAuth.getCurrentUser().getEmail());
-                            mDatabaseUserReference.child(CHILD_USER).push().setValue(users);
+                            String user_id = mFirebaseAuth.getCurrentUser().getUid();
+                            String user_email = mFirebaseAuth.getCurrentUser().getEmail();
+                            mDatabaseUserReference.child("userInformation").child(user_id).child("userEmail").setValue(user_email);
                             Intent signInIntent = new Intent(SignUpActivity.this, MainActivity.class);
                             signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(signInIntent);

@@ -13,13 +13,26 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
+import java.util.concurrent.RecursiveTask;
 
 import ru.aviasales.core.AviasalesSDK;
 import ru.aviasales.core.identification.SdkConfig;
@@ -44,12 +57,17 @@ public class MainActivity extends AppCompatActivity
     private FrameLayout mFrameLayout;
     private Toolbar mToolbar;
 
+    private ImageView mUserProfileImage;
+    private TextView mUserProfileName;
+    private TextView mUserProfileEmail;
+
     private String mUsername;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     private DatabaseReference mDatabaseArticleReference;
+    private DatabaseReference mUserInformationDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +97,34 @@ public class MainActivity extends AppCompatActivity
         mNavigationView = (NavigationView) findViewById(R.id.navView);
         mNavigationView.setNavigationItemSelectedListener(this);
 
+        mUserProfileImage = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.userProfileImageView);
+        mUserProfileName = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.userNameTextView);
+        mUserProfileEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.userEmailTextView);
+
+
+        mUserInformationDatabaseReference = FirebaseDatabase.getInstance().getReference().child("userInformation");
+        mUserInformationDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String user_uid = mFirebaseAuth.getCurrentUser().getUid();
+                String user_email = dataSnapshot.child(user_uid).child("userEmail").getValue().toString();
+
+                if ( dataSnapshot.child(user_uid).hasChild("userPhoto") && dataSnapshot.child(user_uid).hasChild("userName")) {
+                    String user_image_url = dataSnapshot.child(user_uid).child("userPhoto").getValue().toString();
+                    String user_name = dataSnapshot.child(user_uid).child("userName").getValue().toString();
+
+                    Picasso.with(getApplicationContext()).load(user_image_url).into(mUserProfileImage);
+                    mUserProfileName.setText(user_name);
+                }
+                mUserProfileEmail.setText(user_email);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 //        mFloatingToolbar = (FloatingToolbar) findViewById(R.id.floatingToolbar);
 //        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
 //        mFloatingToolbar.attachFab(mFloatingActionButton);
@@ -102,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articles");
+        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articlesList");
 //        mToolbar = (Toolbar) findViewById(R.id.toolbar);
 //        mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
 //        setSupportActionBar(mToolbar);
@@ -111,14 +157,13 @@ public class MainActivity extends AppCompatActivity
 //        assert actionBar != null;
 //        actionBar.setDisplayHomeAsUpEnabled(true);
         mFrameLayout = (FrameLayout) findViewById(R.id.fragment_container);
-        if (savedInstanceState == null ) {
-            RecyclerList recyclerList = new RecyclerList();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, recyclerList)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .commit();
-
-        }
+//        if (savedInstanceState == null ) {
+//            RecyclerList recyclerList = new RecyclerList();
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            fragmentManager.beginTransaction().replace(R.id.fragment_container, recyclerList)
+//                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+//                    .commit();
+//        }
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -133,7 +178,20 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
+
+        initFragment();
     }
+
+    private void initFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        RecyclerList recyclerList = new RecyclerList();
+        if ( aviasalesFragment == null) {
+            aviasalesFragment = (AviasalesFragment) AviasalesFragment.newInstance();
+        }
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, recyclerList).addToBackStack(null).commit();
+    }
+
     @Override
     public void onBackPressed() {
         if (!aviasalesFragment.onBackPressed()) {
@@ -178,8 +236,16 @@ public class MainActivity extends AppCompatActivity
                     .commit();
 
         } else if (id == R.id.nav_favoriteMenu) {
+            FavoriteRecyclerList favoriteRecyclerList = new FavoriteRecyclerList();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, favoriteRecyclerList)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .addToBackStack(null)
+                    .commit();
 
-        } else if (id == R.id.nav_worldMap) {
+        } else if (id == R.id.nav_profileSetup) {
+            Intent profileSetupIntent = new Intent (MainActivity.this, ProfileSetup.class);
+            startActivity(profileSetupIntent);
 
         } else if (id == R.id.nav_signOut) {
             mFirebaseAuth.signOut();

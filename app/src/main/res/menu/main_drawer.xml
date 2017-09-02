@@ -4,18 +4,23 @@
 
     <item
         android:id="@+id/nav_filghtSearch"
+        android:icon="@drawable/ic_flight_takeoff_black_24dp"
         android:title="Search Flight"/>
     <item
         android:id="@+id/nav_placeMenu"
+        android:icon="@drawable/ic_explore_black_24dp"
         android:title="Places to Go"/>
     <item
         android:id="@+id/nav_favoriteMenu"
         android:enabled="true"
+        android:icon="@drawable/ic_favorite_black_24dp"
         android:title="My Favorite"/>
     <item
-        android:id="@+id/nav_worldMap"
-        android:title="World Map"/>
+        android:id="@+id/nav_profileSetup"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Profile Setting"/>
     <item
         android:id="@+id/nav_signOut"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"
         android:title="Sign Out"/>
 </menu>
