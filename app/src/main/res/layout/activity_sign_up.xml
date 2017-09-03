@@ -5,15 +5,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.now.parties.SignUpActivity"
     android:orientation="vertical"
-    tools:layout_editor_absoluteY="81dp"
-    tools:layout_editor_absoluteX="0dp">
+    tools:context="com.now.parties.SignUpActivity"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="81dp">
+
+    <EditText
+        android:id="@+id/newMemberEmailEditText"
+        android:layout_width="320dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/newMemberPwEditText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"/>
+
+    <EditText
+        android:id="@+id/newMemberPwEditText"
+        android:layout_width="320dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/newMemberPwCheckEditText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
     <EditText
         android:id="@+id/newMemberPwCheckEditText"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
+        android:layout_width="320dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -24,60 +55,32 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
-    <EditText
-        android:id="@+id/newMemberEmailEditText"
-        android:layout_width="300dp"
-        android:layout_height="43dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/newMemberPwEditText"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="1.0"/>
-
-    <EditText
-        android:id="@+id/newMemberPwEditText"
-        android:layout_width="300dp"
-        android:layout_height="43dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/newMemberPwCheckEditText"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
     <Button
         android:id="@+id/signupButton"
-        android:layout_width="150dp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:background="@color/dark_blue_455A64"
         android:text="Email Sign Up"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/googleSignUpButton"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@+id/googleSignUpButton"/>
 
-    <com.google.android.gms.common.SignInButton
+    <Button
         android:id="@+id/googleSignUpButton"
-        android:layout_width="150dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="8dp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="#d62d20"
+        android:text="Google Sign Up"
         android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-
-    </com.google.android.gms.common.SignInButton>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="32dp"/>
 
 </android.support.constraint.ConstraintLayout>

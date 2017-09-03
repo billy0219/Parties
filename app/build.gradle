@@ -61,6 +61,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'ru.aviasales.template:aviasalesSdkTemplate:2.1.10'
     compile 'com.github.rubensousa:floatingtoolbar:1.5.1'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
     testCompile 'junit:junit:4.12'
 }

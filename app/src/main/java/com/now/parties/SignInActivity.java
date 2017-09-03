@@ -24,7 +24,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,7 +40,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private TextView mExMemberPassword;
     private Button mSignInButton;
 
-    private SignInButton mGoogleSignInButton;
+    private Button mGoogleSignInButton;
 
     private FirebaseAuth mFirebaseAuth;
     private DatabaseReference mUserDatabaseReference;
@@ -59,7 +58,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mExMemberPassword = (TextView) findViewById(R.id.exMemberPwEditText);
         mSignInButton = (Button) findViewById(R.id.buttonToSignIn);
 
-        mGoogleSignInButton = (SignInButton) findViewById(R.id.googleSignInButton) ;
+        mGoogleSignInButton = (Button) findViewById(R.id.googleSignInButton) ;
 
         mSignInProgressDialog = new ProgressDialog(this);
 
@@ -108,7 +107,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         Intent signInIntent = new Intent(SignInActivity.this, MainActivity.class);
                         signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(signInIntent);
-                        overridePendingTransition(R.anim.fade, R.anim.hold);
+                        overridePendingTransition(R.anim.fade_animation, R.anim.hold_animation);
                     } else {
                         mSignInProgressDialog.dismiss();
                         Toast.makeText(SignInActivity.this,

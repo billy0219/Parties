@@ -88,6 +88,12 @@ public class MainActivity extends AppCompatActivity
         mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         setSupportActionBar(mToolbar);
 
+        mFrameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+        initFragment();
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articlesList");
+
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -101,30 +107,43 @@ public class MainActivity extends AppCompatActivity
         mUserProfileName = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.userNameTextView);
         mUserProfileEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.userEmailTextView);
 
-
         mUserInformationDatabaseReference = FirebaseDatabase.getInstance().getReference().child("userInformation");
-        mUserInformationDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String user_uid = mFirebaseAuth.getCurrentUser().getUid();
-                String user_email = dataSnapshot.child(user_uid).child("userEmail").getValue().toString();
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    mUserInformationDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String user_uid = mFirebaseAuth.getCurrentUser().getUid();
+                            String user_email = dataSnapshot.child(user_uid).child("userEmail").getValue().toString();
 
-                if ( dataSnapshot.child(user_uid).hasChild("userPhoto") && dataSnapshot.child(user_uid).hasChild("userName")) {
-                    String user_image_url = dataSnapshot.child(user_uid).child("userPhoto").getValue().toString();
-                    String user_name = dataSnapshot.child(user_uid).child("userName").getValue().toString();
+                            if ( dataSnapshot.child(user_uid).hasChild("userPhoto") && dataSnapshot.child(user_uid).hasChild("userName")) {
+                                String user_image_url = dataSnapshot.child(user_uid).child("userPhoto").getValue().toString();
+                                String user_name = dataSnapshot.child(user_uid).child("userName").getValue().toString();
 
-                    Picasso.with(getApplicationContext()).load(user_image_url).into(mUserProfileImage);
-                    mUserProfileName.setText(user_name);
+                                Picasso.with(getApplicationContext()).load(user_image_url).into(mUserProfileImage);
+                                mUserProfileName.setText(user_name);
+                            }
+
+                            mUserProfileEmail.setText(user_email);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                } else {
+                    Intent signInIntent = new Intent(MainActivity.this, MemberStatusActivity.class);
+                    signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(signInIntent);
                 }
-                mUserProfileEmail.setText(user_email);
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        };
 //        mFloatingToolbar = (FloatingToolbar) findViewById(R.id.floatingToolbar);
 //        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
 //        mFloatingToolbar.attachFab(mFloatingActionButton);
@@ -147,8 +166,7 @@ public class MainActivity extends AppCompatActivity
 //                        .setAction("Action", null).show();
 //            }
 //        });
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mDatabaseArticleReference = FirebaseDatabase.getInstance().getReference().child("articlesList");
+
 //        mToolbar = (Toolbar) findViewById(R.id.toolbar);
 //        mToolbar.setTitleTextColor(Color.parseColor("#ffffff"));
 //        setSupportActionBar(mToolbar);
@@ -156,7 +174,7 @@ public class MainActivity extends AppCompatActivity
 //        ActionBar actionBar = getSupportActionBar();
 //        assert actionBar != null;
 //        actionBar.setDisplayHomeAsUpEnabled(true);
-        mFrameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+
 //        if (savedInstanceState == null ) {
 //            RecyclerList recyclerList = new RecyclerList();
 //            FragmentManager fragmentManager = getSupportFragmentManager();
@@ -164,22 +182,6 @@ public class MainActivity extends AppCompatActivity
 //                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 //                    .commit();
 //        }
-
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-
-                } else {
-                    Intent signInIntent = new Intent(MainActivity.this, MemberStatusActivity.class);
-                    signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(signInIntent);
-                }
-            }
-        };
-
-        initFragment();
     }
 
     private void initFragment() {

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2e2e2e</color>
-    <color name="colorPrimaryDark">#bebebe</color>
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorAsPrimary">#455A64</color>
+    <color name="colorAsPrimaryDark">#455A64</color>
+    <color name="colorAviasalesMain">#455A64</color>
+
+    <color name="aviasales_results_background">@color/grey_background</color>
+    <color name="aviasales_search_form_background">@color/white</color>
+    <color name="aviasales_filters_background">@color/white</color>
+
+    <color name="aviasales_select_airport_background">@color/white</color>
+    <color name="aviasales_ticket_background">@color/grey_background</color>
+
+    <color name="aviasales_results_card_color">@color/white</color>
+    <color name="aviasales_price_color">@color/yellow_FDCC50</color>
 </resources>

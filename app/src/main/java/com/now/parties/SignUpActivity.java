@@ -24,7 +24,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -39,7 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mPwCheckEditText;
 
     private Button mSignUpButton;
-    private SignInButton mGoogleSignUpButton;
+    private Button mGoogleSignUpButton;
 
     private FirebaseAuth mFirebaseAuth;
     private DatabaseReference mDatabaseUserReference;
@@ -58,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
         mPwEditText = (EditText) findViewById(R.id.newMemberPwEditText);
         mPwCheckEditText = (EditText) findViewById(R.id.newMemberPwCheckEditText);
         mSignUpButton = (Button) findViewById(R.id.signupButton);
-        mGoogleSignUpButton = (SignInButton) findViewById(R.id.googleSignUpButton);
+        mGoogleSignUpButton = (Button) findViewById(R.id.googleSignUpButton);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseUserReference = FirebaseDatabase.getInstance().getReference();
@@ -103,7 +102,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         Intent signUpIntent = new Intent(SignUpActivity.this, MainActivity.class);
                                         signUpIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(signUpIntent);
-                                        overridePendingTransition(R.anim.fade, R.anim.hold);
+                                        overridePendingTransition(R.anim.fade_animation, R.anim.hold_animation);
                                     }
                                 }
                             });
@@ -161,7 +160,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Intent signInIntent = new Intent(SignUpActivity.this, MainActivity.class);
                             signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(signInIntent);
-                            overridePendingTransition(R.anim.fade, R.anim.hold);
+                            overridePendingTransition(R.anim.fade_animation, R.anim.hold_animation);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
